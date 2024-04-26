@@ -56,16 +56,14 @@ public class NguoiDungController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> loginPass(@RequestBody @Validated UserLogin userLogin) {
+    public ResponseEntity<?> loginPass(@RequestBody @Validated UserLogin userLogin) {
         Map<String, Object> result =new HashMap<String, Object>();
         try {
             NguoiDungDto nguoiDung = nguoiDungService.findByEmail(userLogin.getUsername());
             boolean checkPass = BCrypt.checkpw(userLogin.getPassword(), nguoiDung.getPassword());
             if(checkPass){
                 if(nguoiDung.getStatus() != 1) {
-                    result.put("result", "tai khoan bi khoa ");
-                    result.put("success", false);
-                    return ResponseEntity.ok(result);
+                    return ResponseEntity.badRequest().body(new ResponseDTO<>(false, "tai khoan bi khoa "));
                 }
                 UserPrincipal userPrincipal = new UserPrincipal();
                 userPrincipal.setUserId(nguoiDung.getId());
@@ -81,15 +79,11 @@ public class NguoiDungController {
                 HethongNguoidungToken heThongNguoidungTokenSave = tokenService.createToken(hethongNguoidungToken);
                 result.put("result", heThongNguoidungTokenSave.getToken());
                 result.put("success", true);
-
-
             }else {
-                result.put("result", "Tài khoản / mật khẩu không đúng");
-                result.put("success", false);
+                return ResponseEntity.badRequest().body(new ResponseDTO<>(false, "Tài khoản / mật khẩu không đúng"));
             }
         }catch (Exception e){
-            result.put("result",e.getMessage());
-            result.put("success", false);
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(false, SystemConstant.MSG_SYSTEM_ERROR));
         }
         return ResponseEntity.ok(result);
     }
