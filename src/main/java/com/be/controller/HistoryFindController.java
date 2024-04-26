@@ -1,14 +1,14 @@
 package com.be.controller;
 
 import com.be.common_api.HistoryFind;
+import com.be.constanst.SystemConstant;
 import com.be.dto.HistoryFindDto;
-import com.be.mapper.HistoryFindMapper;
+import com.be.dto.ResponseDTO;
 import com.be.service.HistoryFindService;
 import com.llq.springfilter.boot.Filter;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -18,9 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.FileSystemAlreadyExistsException;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RequestMapping("/api/history-find")
 @RestController
@@ -40,7 +38,7 @@ public class HistoryFindController {
     }
 
     @DeleteMapping("/del/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         Optional.ofNullable(historyFindService.findById(id)).orElseThrow(() -> {
             log.error("Unable to delete non-existent data！");
             return new FileSystemAlreadyExistsException();

@@ -60,6 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     String[] PUBLIC_LIST = {
 //            "/api/test/post","/api/test/get/*","/api/test/put/*","/api/test/del/*",
+            "/api/nguoi-dung//change-password",
             "/api/nguoi-dung/create","/api/nguoi-dung/login","/api/nguoi-dung/get/*","/api/nguoi-dung/put/*","/api/nguoi-dung/del/*",
             "/api/files","/api/files/*","/api/upload",
             "/api/decor-type/post","/api/decor-type/get/*","/api/decor-type/put/*","/api/decor-type/del/*",

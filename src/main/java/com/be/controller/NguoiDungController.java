@@ -5,7 +5,9 @@ import com.be.authenticate.UserPrincipal;
 import com.be.common_api.HethongNguoidungToken;
 import com.be.common_api.NguoiDung;
 import com.be.common_api.UserLogin;
+import com.be.constanst.SystemConstant;
 import com.be.dto.NguoiDungDto;
+import com.be.dto.ResponseDTO;
 import com.be.handler.Utils;
 import com.be.service.NguoiDungService;
 import com.be.service.TokenService;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.FileSystemAlreadyExistsException;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,30 +60,28 @@ public class NguoiDungController {
         Map<String, Object> result =new HashMap<String, Object>();
         try {
             NguoiDungDto nguoiDung = nguoiDungService.findByEmail(userLogin.getUsername());
-            Boolean checkPass = BCrypt.checkpw(userLogin.getPassword(), nguoiDung.getPassword());
+            boolean checkPass = BCrypt.checkpw(userLogin.getPassword(), nguoiDung.getPassword());
             if(checkPass){
-//                UserPrincipal userPrincipal = new UserPrincipal();
-//                userPrincipal.setUserId(nguoiDung.getId());
-//                userPrincipal.setUsername(nguoiDung.getEmail());
-//                userPrincipal.setPassword(nguoiDung.getPassword());
-//                userPrincipal.setAdmin(nguoiDung.getRole()==0);
-//                //
-//                HethongNguoidungToken hethongNguoidungToken = new HethongNguoidungToken();
-//                hethongNguoidungToken.setCreatedUser(nguoiDung.getId());
-//                String tokenGen = jwtUtil.generateToken(userPrincipal);
-//                hethongNguoidungToken.setToken(tokenGen);
-//                hethongNguoidungToken.setTokenexpdate(Timestamp.valueOf("2999-03-12 20:45:00"));
-//                HethongNguoidungToken heThongNguoidungTokenSave = tokenService.createToken(hethongNguoidungToken);
-//                result.put("result", heThongNguoidungTokenSave.getToken());
-
-
-                if(nguoiDung.getStatus()==1){
-                    result.put("result", nguoiDung);
-                    result.put("success", true);
-                }else {
+                if(nguoiDung.getStatus() != 1) {
                     result.put("result", "tai khoan bi khoa ");
                     result.put("success", false);
+                    return ResponseEntity.ok(result);
                 }
+                UserPrincipal userPrincipal = new UserPrincipal();
+                userPrincipal.setUserId(nguoiDung.getId());
+                userPrincipal.setUsername(nguoiDung.getEmail());
+                userPrincipal.setPassword(nguoiDung.getPassword());
+                userPrincipal.setAdmin(nguoiDung.getRole()==0);
+                //
+                HethongNguoidungToken hethongNguoidungToken = new HethongNguoidungToken();
+                hethongNguoidungToken.setCreatedUser(nguoiDung.getId());
+                String tokenGen = jwtUtil.generateToken(userPrincipal);
+                hethongNguoidungToken.setToken(tokenGen);
+                hethongNguoidungToken.setTokenexpdate(Timestamp.valueOf("2999-03-12 20:45:00"));
+                HethongNguoidungToken heThongNguoidungTokenSave = tokenService.createToken(hethongNguoidungToken);
+                result.put("result", heThongNguoidungTokenSave.getToken());
+                result.put("success", true);
+
 
             }else {
                 result.put("result", "Tài khoản / mật khẩu không đúng");
@@ -94,7 +95,7 @@ public class NguoiDungController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Map<String, Object>> save(@RequestBody @Validated NguoiDungDto nguoiDungDto) {
+    public ResponseEntity<ResponseDTO> save(@RequestBody @Validated NguoiDungDto nguoiDungDto) {
         Map<String, Object> result =new HashMap<String, Object>();
         NguoiDungDto tblUser = nguoiDungService.findByEmail(nguoiDungDto.getEmail());
         if(tblUser == null){
@@ -102,55 +103,58 @@ public class NguoiDungController {
                 String passConvert = Utils.getBCryptedPassword(nguoiDungDto.getPassword());
                 nguoiDungDto.setPassword(passConvert);
                 NguoiDungDto userLogin=  nguoiDungService.save(nguoiDungDto);
+
                 result.put("result", userLogin);
                 result.put("success", true);
+                return ResponseEntity.ok(new ResponseDTO<>(true, null, List.of(userLogin)));
             }catch (Exception e){
                 result.put("result",e.getMessage());
                 result.put("success", false);
+                return ResponseEntity.internalServerError().body(new ResponseDTO<NguoiDungDto>(false, SystemConstant.MSG_SYSTEM_ERROR, null));
             }
         }
         else{
             result.put("result", "Email đã tồm tại");
             result.put("success", false);
+            return ResponseEntity.badRequest().body(new ResponseDTO<NguoiDungDto>(false, "Email đã tồm tại", null));
         }
-        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<Map<String, Object>> findById(@PathVariable("id") Long id) {
+    public ResponseEntity<ResponseDTO> findById(@PathVariable("id") Long id) {
         Map<String, Object> result = new HashMap<String, Object>();
         try {
             NguoiDungDto nguoiDung = nguoiDungService.findById(id);
             result.put("result",nguoiDung);
             result.put("success",true);
+            return ResponseEntity.ok(new ResponseDTO<>(true, null, List.of(nguoiDung)));
         } catch (Exception e) {
             result.put("result",e.getMessage());
             result.put("success",false);
+            return ResponseEntity.internalServerError().body(new ResponseDTO(false, SystemConstant.MSG_SYSTEM_ERROR, null));
         }
-        return ResponseEntity.ok(result);
     }
 
     @DeleteMapping("/del/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         try {
             NguoiDungDto nguoiDung = nguoiDungService.findById(id);
             nguoiDung.setDeleted(true);
             nguoiDungService.update(nguoiDung, id);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok(new ResponseDTO<>(true, null, null));
         }catch (Exception e){
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(false, SystemConstant.MSG_SYSTEM_ERROR, null));
         }
     }
 
     @GetMapping("/get/page")
     public ResponseEntity<Page<NguoiDungDto>> pageQuery(@Filter Specification<NguoiDung> spec, Pageable pageable) {
-        Map<String, Object> result = new HashMap<String, Object>();
         Page<NguoiDungDto> nguoiDungPage = nguoiDungService.findByCondition(spec, pageable);
         return ResponseEntity.ok(nguoiDungPage);
     }
 
     @PutMapping("/put/{id}")
-    public ResponseEntity<Map<String, Object>> update(@RequestBody NguoiDungDto nguoiDungDto, @PathVariable("id") Long id) {
+    public ResponseEntity<?> update(@RequestBody NguoiDungDto nguoiDungDto, @PathVariable("id") Long id) {
         Map<String, Object> result = new HashMap<String, Object>();
         try {
             NguoiDungDto nguoiDung = nguoiDungService.findById(id);
@@ -176,31 +180,30 @@ public class NguoiDungController {
             result.put("result",nguoiDung);
             result.put("success",true);
         } catch (Exception e) {
-            result.put("result",e.getMessage());
-            result.put("success",false);
+            log.error(e.getMessage(), e);
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(false, SystemConstant.MSG_SYSTEM_ERROR, null));
         }
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping("/change-password/{id}")
-    public ResponseEntity<Map<String, Object>> changePass(@RequestBody @Validated NguoiDungDto nguoiDungDto, @PathVariable("id") Long id) {
-        Map<String, Object> result =new HashMap<String, Object>();
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePass(@RequestBody @Validated NguoiDungDto nguoiDungDto) {
+        Map<String, Object> result =new HashMap<>();
         NguoiDungDto tblUser = nguoiDungService.findByEmail(nguoiDungDto.getEmail());
-        if(tblUser == null){
+        if(tblUser != null){
             try{
                 String passConvert = Utils.getBCryptedPassword(nguoiDungDto.getPassword());
-                nguoiDungDto.setPassword(passConvert);
-                NguoiDungDto userLogin=  nguoiDungService.save(nguoiDungDto);
+                tblUser.setPassword(passConvert);
+                NguoiDungDto userLogin=  nguoiDungService.save(tblUser);
                 result.put("result", userLogin);
                 result.put("success", true);
             }catch (Exception e){
-                result.put("result",e.getMessage());
-                result.put("success", false);
+                log.error(e.getMessage(), e);
+                return ResponseEntity.internalServerError().body(new ResponseDTO<>(false, SystemConstant.MSG_SYSTEM_ERROR, null));
             }
         }
         else{
-            result.put("result", "Email đã tồm tại");
-            result.put("success", false);
+            return ResponseEntity.badRequest().body(new ResponseDTO<>(false, "Email không tồn tại", null));
         }
         return ResponseEntity.ok(result);
     }
