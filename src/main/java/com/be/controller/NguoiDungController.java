@@ -20,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -70,7 +71,11 @@ public class NguoiDungController {
                 userPrincipal.setUsername(nguoiDung.getEmail());
                 userPrincipal.setPassword(nguoiDung.getPassword());
                 userPrincipal.setAdmin(nguoiDung.getRole()==0);
-                //
+                if (userPrincipal.isAdmin()) {
+                    userPrincipal.setAuthorities(List.of("ROLE_ADMIN"));
+                } else {
+                    userPrincipal.setAuthorities(List.of("ROLE_USER"));
+                }
                 HethongNguoidungToken hethongNguoidungToken = new HethongNguoidungToken();
                 hethongNguoidungToken.setCreatedUser(nguoiDung.getId());
                 String tokenGen = jwtUtil.generateToken(userPrincipal);

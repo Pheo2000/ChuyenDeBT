@@ -1,8 +1,10 @@
 package com.be.authenticate;
 
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
 
 public class UserPrincipal  implements UserDetails {
     private Long userId;
@@ -53,7 +55,6 @@ public class UserPrincipal  implements UserDetails {
     public void setAuthorities(Collection authorities) {
         this.authorities = authorities;
     }
-
 
     @Override
     public boolean isAccountNonExpired() {
