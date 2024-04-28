@@ -34,12 +34,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable().authorizeRequests()
                 .antMatchers(PUBLIC_LIST)
                 .permitAll()
-                .antMatchers(ROLE_ADMIN_LIST)
+                .antMatchers(LIST_PRIVATE)
                 .hasAnyRole("ADMIN")
-                .antMatchers(ROLE_USER_LIST)
-                .hasAnyRole("USER")
-                .antMatchers(AUTHENTICATED_LIST)
-                .authenticated()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement()
@@ -62,23 +58,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return source;
     }
 
-
     String[] PUBLIC_LIST = {
 //            "/api/test/post","/api/test/get/*","/api/test/put/*","/api/test/del/*",
-            "/api/nguoi-dung/login",  "/api/nguoi-dung/create"
-    };
-
-    String[] AUTHENTICATED_LIST = {
-//            "/api/nguoi-dung/get/*"
-    };
-
-    String[] ROLE_USER_LIST = {
-//            role user
-    };
-
-    String[] ROLE_ADMIN_LIST = {
-            "/api/nguoi-dung//change-password","/api/nguoi-dung/get/*",
-           "/api/nguoi-dung/put/*","/api/nguoi-dung/del/*",
+            "/api/nguoi-dung//change-password",
+            "/api/nguoi-dung/create","/api/nguoi-dung/login","/api/nguoi-dung/get/*","/api/nguoi-dung/put/*","/api/nguoi-dung/del/*",
             "/api/files","/api/files/*","/api/upload",
             "/api/decor-type/post","/api/decor-type/get/*","/api/decor-type/put/*","/api/decor-type/del/*",
             "/api/decor/post","/api/decor/get/*","/api/decor/put/*","/api/decor/del/*",
@@ -88,6 +71,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/api/bill-detail/post","/api/bill-detail/get/*","/api/bill-detail/put/*","/api/bill-detail/del/*",
             "/api/history-bill/post","/api/history-bill/get/*","/api/history-bill/put/*","/api/history-bill/del/*",
             "/api/history-find/post","/api/history-find/get/*","/api/history-find/put/*","/api/history-find/del/*",
+    };
+
+    String[] LIST_PRIVATE = {
     };
 
 }
