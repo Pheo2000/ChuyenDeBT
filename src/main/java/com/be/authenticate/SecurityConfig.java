@@ -65,7 +65,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     String[] PUBLIC_LIST = {
 //            "/api/test/post","/api/test/get/*","/api/test/put/*","/api/test/del/*",
-            "/api/nguoi-dung/login",  "/api/nguoi-dung/create"
+            "/api/nguoi-dung/login",  "/api/nguoi-dung/create", "/api/nguoi-dung/forgot-password"
+            ,"/api/decor/get/*","/api/decor-type/get/*"
     };
 
     String[] AUTHENTICATED_LIST = {
@@ -74,20 +75,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     String[] ROLE_USER_LIST = {
 //            role user
+            "/api/nguoi-dung/change-password",
+            "/api/favorite/post","/api/favorite/get/*","/api/favorite/put/*","/api/favorite/del/*",
+            "/api/cart/post","/api/cart/get/*","/api/cart/put/*","/api/cart/del/*",
+            //nhac APP ls tim kiem
+            "/api/history-find/post","/api/history-find/get/*","/api/history-find/put/*","/api/history-find/del/*",
+            "/api/files","/api/files/*","/api/upload",
+            "/api/bill-detail/post","/api/bill-detail/get/*",
+            "/api/bill/post","/api/bill/get/*",
     };
 
     String[] ROLE_ADMIN_LIST = {
-            "/api/nguoi-dung//change-password","/api/nguoi-dung/get/*",
-           "/api/nguoi-dung/put/*","/api/nguoi-dung/del/*",
-            "/api/files","/api/files/*","/api/upload",
             "/api/decor-type/post","/api/decor-type/get/*","/api/decor-type/put/*","/api/decor-type/del/*",
+            "/api/nguoi-dung/get/*","/api/nguoi-dung/put/*","/api/nguoi-dung/del/*",
             "/api/decor/post","/api/decor/get/*","/api/decor/put/*","/api/decor/del/*",
-            "/api/favorite/post","/api/favorite/get/*","/api/favorite/put/*","/api/favorite/del/*",
-            "/api/cart/post","/api/cart/get/*","/api/cart/put/*","/api/cart/del/*",
-            "/api/bill/post","/api/bill/get/*","/api/bill/put/*","/api/bill/del/*",
-            "/api/bill-detail/post","/api/bill-detail/get/*","/api/bill-detail/put/*","/api/bill-detail/del/*",
-            "/api/history-bill/post","/api/history-bill/get/*","/api/history-bill/put/*","/api/history-bill/del/*",
-            "/api/history-find/post","/api/history-find/get/*","/api/history-find/put/*","/api/history-find/del/*",
+            "/api/bill-detail/get/*","/api/bill-detail/put/*",
+            "/api/bill/get/*","/api/bill/put/*"
     };
 
 }

@@ -8,6 +8,7 @@ import com.be.common_api.UserLogin;
 import com.be.constanst.SystemConstant;
 import com.be.dto.NguoiDungDto;
 import com.be.dto.ResponseDTO;
+import com.be.dto.UserDto;
 import com.be.handler.Utils;
 import com.be.service.NguoiDungService;
 import com.be.service.TokenService;
@@ -82,11 +83,41 @@ public class NguoiDungController {
                 hethongNguoidungToken.setToken(tokenGen);
                 hethongNguoidungToken.setTokenexpdate(Timestamp.valueOf("2999-03-12 20:45:00"));
                 HethongNguoidungToken heThongNguoidungTokenSave = tokenService.createToken(hethongNguoidungToken);
+                UserDto user = new UserDto();
+                user.setUserId(nguoiDung.getId());
+                user.setUsername(nguoiDung.getEmail());
+                user.setAddress(nguoiDung.getAddress());
+                user.setEmail(nguoiDung.getEmail());
+                user.setSdt(nguoiDung.getSdt());
+                result.put("user", user);
                 result.put("result", heThongNguoidungTokenSave.getToken());
                 result.put("success", true);
             }else {
                 return ResponseEntity.badRequest().body(new ResponseDTO<>(false, "Tài khoản / mật khẩu không đúng"));
             }
+        }catch (Exception e){
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(false, SystemConstant.MSG_SYSTEM_ERROR));
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgetPass(@RequestBody @Validated UserLogin userLogin) {
+        Map<String, Object> result =new HashMap<String, Object>();
+        try {
+            NguoiDungDto nguoiDung = nguoiDungService.findByEmail(userLogin.getUsername());
+            if(nguoiDung == null){
+                return ResponseEntity.badRequest().body(new ResponseDTO<>(false, "tai khoan khong ton tai "));
+            }
+            if(nguoiDung.getStatus() != 1) {
+                return ResponseEntity.badRequest().body(new ResponseDTO<>(false, "tai khoan bi khoa "));
+            }
+
+            String passConvert = Utils.getBCryptedPassword(userLogin.getPassword());
+            nguoiDung.setPassword(passConvert);
+            nguoiDungService.save(nguoiDung);
+            result.put("result", "Thành công");
+            result.put("success", true);
         }catch (Exception e){
             return ResponseEntity.internalServerError().body(new ResponseDTO<>(false, SystemConstant.MSG_SYSTEM_ERROR));
         }

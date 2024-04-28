@@ -16,7 +16,7 @@ public class HethongNguoidungToken {
     @Column(name = "id", updatable = false)
     private Long id;
 
-    @Column(name = "token")
+    @Column(name = "token" , length = 500)
     private String token;
 
     @Column(name = "tokenexpdate")
