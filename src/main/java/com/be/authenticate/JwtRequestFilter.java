@@ -14,6 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -73,25 +74,31 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         try {
             final String authorizationHeader = wrapper.getHeader("Authorization");
-//            logger.info("Authorization Token:" + authorizationHeader);
             UserPrincipal user = null;
             HethongNguoidungToken token = null;
             if (StringUtils.hasText(authorizationHeader) && authorizationHeader.startsWith("")) {
-                String jwt = authorizationHeader.substring(4);
+                String jwt = authorizationHeader.substring(7);
                 user = jwtUtil.getUserFromToken(jwt);
                 token = tokenService.findByToken(jwt);
             } else {
                 logger.warn("Token does not begin with ' '");
             }
 
-            if (null != user && null != token) {
-                if(token.getTokenexpdate().after(new Timestamp(System.currentTimeMillis()))) {
+            if (user != null && token != null) {
+                if (token.getTokenexpdate().after(new Timestamp(System.currentTimeMillis()))) {
                     Set<GrantedAuthority> authorities = new HashSet<>();
-                    user.getAuthorities().forEach(p -> authorities.add(new SimpleGrantedAuthority((String) p)));
+                    if (!CollectionUtils.isEmpty(user.getAuthorities())) {
+                        user.getAuthorities().forEach(p -> authorities.add(new SimpleGrantedAuthority(String.valueOf(p))));
+                    } else {
+                        if (user.isAdmin()) {
+                            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+                        } else {
+                            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+                        }
+                    }
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(user, null, authorities);
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(wrapper));
-                    authentication.setAuthenticated(true);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
                 else
@@ -107,13 +114,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 allowForRefreshToken(ex, wrapper);
             } else {
                 wrapper.setAttribute("exception", ex);
-//                throw new AccessDeniedException("TOKEN Expired, please login again!" + ex.getMessage());
             }
         }
         catch (BadCredentialsException ex) {
             wrapper.setAttribute("exception", ex);
         } catch (Exception ex) {
-            System.out.println(ex);
+            log.error(ex.getMessage(), ex);
         }
 
         filterChain.doFilter(wrapper, response);
