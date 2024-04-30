@@ -62,6 +62,9 @@ public class NguoiDungController {
         Map<String, Object> result =new HashMap<String, Object>();
         try {
             NguoiDungDto nguoiDung = nguoiDungService.findByEmail(userLogin.getUsername());
+            if(nguoiDung == null){
+                return ResponseEntity.badRequest().body(new ResponseDTO<>(false, "tai khoan khong ton tai "));
+            }
             boolean checkPass = BCrypt.checkpw(userLogin.getPassword(), nguoiDung.getPassword());
             if(checkPass){
                 if(nguoiDung.getStatus() != 1) {

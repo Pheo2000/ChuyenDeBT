@@ -70,27 +70,31 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     };
 
     String[] AUTHENTICATED_LIST = {
-//            "/api/nguoi-dung/get/*"
+            "/api/nguoi-dung/get/*",
+            "/api/bill/get/*",
+            "/api/bill-detail/get/*",
+            "/api/nguoi-dung/put/*",
+            "/api/files","/api/files/*","/api/upload",
+            "/api/cart/get/*",
     };
 
     String[] ROLE_USER_LIST = {
 //            role user
             "/api/nguoi-dung/change-password",
             "/api/favorite/post","/api/favorite/get/*","/api/favorite/put/*","/api/favorite/del/*",
-            "/api/cart/post","/api/cart/get/*","/api/cart/put/*","/api/cart/del/*",
+            "/api/cart/post","/api/cart/put/*","/api/cart/del/*",
             //nhac APP ls tim kiem
             "/api/history-find/post","/api/history-find/get/*","/api/history-find/put/*","/api/history-find/del/*",
-            "/api/files","/api/files/*","/api/upload",
-            "/api/bill-detail/post","/api/bill-detail/get/*",
-            "/api/bill/post","/api/bill/get/*",
+            "/api/bill-detail/post",
+            "/api/bill/post"
     };
 
     String[] ROLE_ADMIN_LIST = {
-            "/api/decor-type/post","/api/decor-type/get/*","/api/decor-type/put/*","/api/decor-type/del/*",
-            "/api/nguoi-dung/get/*","/api/nguoi-dung/put/*","/api/nguoi-dung/del/*",
-            "/api/decor/post","/api/decor/get/*","/api/decor/put/*","/api/decor/del/*",
-            "/api/bill-detail/get/*","/api/bill-detail/put/*",
-            "/api/bill/get/*","/api/bill/put/*"
+            "/api/decor-type/post","/api/decor-type/put/*","/api/decor-type/del/*",
+            "/api/nguoi-dung/del/*",
+            "/api/decor/post","/api/decor/put/*","/api/decor/del/*",
+            "/api/bill-detail/put/*",
+            "/api/bill/put/*"
     };
 
 }
