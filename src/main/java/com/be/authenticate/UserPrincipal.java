@@ -10,6 +10,7 @@ public class UserPrincipal  implements UserDetails {
     private Long userId;
     private String username;
     private String password;
+    private String email;
     private boolean isAdmin = false;
     private Collection authorities;
 
@@ -19,6 +20,14 @@ public class UserPrincipal  implements UserDetails {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override

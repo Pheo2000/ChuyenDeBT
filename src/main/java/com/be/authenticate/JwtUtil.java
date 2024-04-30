@@ -1,6 +1,7 @@
 package com.be.authenticate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -12,6 +13,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
@@ -103,5 +106,11 @@ public class JwtUtil {
 
     private boolean isTokenExpired(JWTClaimsSet claims) {
         return getExpirationDateFromToken(claims).after(new Date());
+    }
+
+    public UserPrincipal getUser(){
+        Gson g = new Gson();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return g.fromJson(g.toJson(auth.getPrincipal()), UserPrincipal.class);
     }
 }

@@ -74,6 +74,7 @@ public class NguoiDungController {
                 userPrincipal.setUserId(nguoiDung.getId());
                 userPrincipal.setUsername(nguoiDung.getEmail());
                 userPrincipal.setPassword(nguoiDung.getPassword());
+                userPrincipal.setEmail(nguoiDung.getEmail());
                 userPrincipal.setAdmin(nguoiDung.getRole()==0);
                 if (userPrincipal.isAdmin()) {
                     userPrincipal.setAuthorities(List.of("ROLE_ADMIN"));
@@ -220,24 +221,30 @@ public class NguoiDungController {
     }
 
     @PostMapping("/change-password")
-    public ResponseEntity<?> changePass(@RequestBody @Validated NguoiDungDto nguoiDungDto) {
+    public ResponseEntity<?> changePass(@RequestBody NguoiDungDto nguoiDungDto) {
         Map<String, Object> result =new HashMap<>();
-        NguoiDungDto tblUser = nguoiDungService.findByEmail(nguoiDungDto.getEmail());
-        if(tblUser != null){
-            try{
-                String passConvert = Utils.getBCryptedPassword(nguoiDungDto.getPassword());
-                tblUser.setPassword(passConvert);
-                NguoiDungDto userLogin=  nguoiDungService.save(tblUser);
-                result.put("result", userLogin);
-                result.put("success", true);
-            }catch (Exception e){
-                log.error(e.getMessage(), e);
-                return ResponseEntity.internalServerError().body(new ResponseDTO<>(false, SystemConstant.MSG_SYSTEM_ERROR, null));
+        try {
+            UserPrincipal user = jwtUtil.getUser();
+            NguoiDungDto tblUser = nguoiDungService.findByEmail(user.getEmail());
+            if(tblUser != null){
+                try{
+                    String passConvert = Utils.getBCryptedPassword(nguoiDungDto.getPassword());
+                    tblUser.setPassword(passConvert);
+                    NguoiDungDto userLogin=  nguoiDungService.save(tblUser);
+                    result.put("result", userLogin);
+                    result.put("success", true);
+                }catch (Exception e){
+                    log.error(e.getMessage(), e);
+                    return ResponseEntity.internalServerError().body(new ResponseDTO<>(false, SystemConstant.MSG_SYSTEM_ERROR, null));
+                }
             }
+            else{
+                return ResponseEntity.badRequest().body(new ResponseDTO<>(false, "User không tồn tại", null));
+            }
+        }catch (Exception e){
+            return ResponseEntity.internalServerError().body(new ResponseDTO<>(false, SystemConstant.MSG_SYSTEM_ERROR, null));
         }
-        else{
-            return ResponseEntity.badRequest().body(new ResponseDTO<>(false, "Email không tồn tại", null));
-        }
+
         return ResponseEntity.ok(result);
     }
 }
