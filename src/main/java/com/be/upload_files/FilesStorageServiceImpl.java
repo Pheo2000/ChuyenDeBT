@@ -40,9 +40,13 @@ public class FilesStorageServiceImpl implements FilesStorageService {
 
     @Override
     public void init() {
-        Utils.mkdirs(uploadPath);
+//        Utils.mkdirs(uploadPath);
         Utils.mkdirs(uploadPathCCCD);
-//            Files.createDirectory(Paths.get(uploadPath));
+        try {
+            Files.createDirectory(Paths.get(uploadPath));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 //            Files.createDirectory(Paths.get(uploadPathQR));
 //            Files.createDirectory(Paths.get(uploadPathCCCD));
     }
