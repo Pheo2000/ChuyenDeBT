@@ -66,7 +66,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     String[] PUBLIC_LIST = {
 //            "/api/test/post","/api/test/get/*","/api/test/put/*","/api/test/del/*",
             "/api/nguoi-dung/login",  "/api/nguoi-dung/create", "/api/nguoi-dung/forgot-password"
-            ,"/api/decor/get/*","/api/decor-type/get/*"
+            ,"/api/decor/get/*","/api/decor-type/get/*",
+             "/api/history-bill/post","/api/history-bill/get/*","/api/history-bill/put/*","/api/history-bill/del/*",
+            "/api/files","/api/files/*","/api/upload",
     };
 
     String[] AUTHENTICATED_LIST = {
@@ -74,7 +76,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/api/bill/get/*",
             "/api/bill-detail/get/*",
             "/api/nguoi-dung/put/*",
-            "/api/files","/api/files/*","/api/upload",
             "/api/cart/get/*",
     };
 
@@ -94,7 +95,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/api/nguoi-dung/del/*",
             "/api/decor/post","/api/decor/put/*","/api/decor/del/*",
             "/api/bill-detail/put/*",
-            "/api/bill/put/*"
+           
+            "/api/bill/put/*", "/api/bill/del/*",
     };
 
 }
