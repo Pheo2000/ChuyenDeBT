@@ -1,10 +1,14 @@
 package com.be.service;
 
+import com.be.authenticate.JwtUtil;
+import com.be.authenticate.SecurityUtil;
 import com.be.common_api.Bill;
+import com.be.common_api.Cart;
 import com.be.dto.BillDto;
 import com.be.handler.Utils;
 import com.be.mapper.BillMapper;
 import com.be.repository.BillRepository;
+import com.be.repository.CartRepository;
 import com.llq.springfilter.boot.Filter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -23,15 +27,23 @@ import java.util.List;
 @Transactional
 public class BillService {
     private final BillRepository repository;
+    private final CartRepository repositoryCart;
     private final BillMapper billMapper;
-
-    public BillService(BillRepository repository, BillMapper billMapper) {
+    public BillService(BillRepository repository, BillMapper billMapper, CartRepository repositoryCart) {
         this.repository = repository;
         this.billMapper = billMapper;
+        this.repositoryCart = repositoryCart;
     }
 
+    @Transactional
     public BillDto save(BillDto billDto) {
         Bill entity = billMapper.toEntity(billDto);
+        Long userId = SecurityUtil.getUserPrincipalId();
+        List<Cart> lst = repositoryCart.findByUser(userId);
+        lst.forEach(cart -> {
+            cart.setDeleted(true);
+        });
+        repositoryCart.saveAll(lst);
         return billMapper.toDto(repository.save(entity));
     }
 

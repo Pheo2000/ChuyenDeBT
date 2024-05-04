@@ -46,6 +46,14 @@ public class CartController {
         return ResponseEntity.ok(cart);
     }
 
+    @DeleteMapping("/del/{id}")
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+        CartDto cart = cartService.findById(id);
+        cart.setDeleted(true);
+        cartService.update(cart, id);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/get/{id}")
     public ResponseEntity<CartDto> findById(@PathVariable("id") Long id) {
         CartDto cart = cartService.findById(id);

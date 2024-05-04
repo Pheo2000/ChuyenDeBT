@@ -69,7 +69,7 @@ public class CartService {
         CartDto data = findById(id);
         Cart entity = cartMapper.toEntity(cartDto);
         BeanUtils.copyProperties(entity, data, Utils.getNullPropertyNames(entity));
-        return save(cartMapper.toDto(entity));
+        return cartMapper.toDto(repository.save(entity));
     }
 
     public List<CartDto> updateCart(List<CartDto> cartDto) {
