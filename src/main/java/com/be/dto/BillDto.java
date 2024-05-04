@@ -18,6 +18,8 @@ public class BillDto extends BaseDto {
     private Short methodPayment;
     private Short status;
 
+    private String address;
+
     public BillDto() {
     }
 }

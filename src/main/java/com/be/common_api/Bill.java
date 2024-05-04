@@ -28,4 +28,7 @@ public class Bill extends BaseEntity{
 
     @Column(name = "status")
     private Short status;
+
+    @Column(name = "address")
+    private String address;
 }
