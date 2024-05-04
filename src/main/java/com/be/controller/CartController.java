@@ -1,7 +1,9 @@
 package com.be.controller;
 
 import com.be.common_api.Cart;
+import com.be.constanst.SystemConstant;
 import com.be.dto.CartDto;
+import com.be.dto.ResponseDTO;
 import com.be.mapper.CartMapper;
 import com.be.service.CartService;
 import com.llq.springfilter.boot.Filter;
@@ -38,18 +40,16 @@ public class CartController {
         return ResponseEntity.ok(cartDto1);
     }
 
+    @GetMapping("/get/cartbyuser")
+    public ResponseEntity<List<CartDto>> findByUser() {
+        List<CartDto> cart = cartService.findByUser();
+        return ResponseEntity.ok(cart);
+    }
+
     @GetMapping("/get/{id}")
     public ResponseEntity<CartDto> findById(@PathVariable("id") Long id) {
         CartDto cart = cartService.findById(id);
         return ResponseEntity.ok(cart);
-    }
-
-    @DeleteMapping("/del/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
-        CartDto cart = cartService.findById(id);
-        cart.setDeleted(true);
-        cartService.update(cart, id);
-        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/get/page")
@@ -72,5 +72,16 @@ public class CartController {
         }
         cartService.update(cart, id);
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/put/cart")
+    public ResponseEntity<Void> updateCart(@RequestBody List<CartDto> cartDto) {
+        try {
+            cartService.updateCart(cartDto);
+            return ResponseEntity.ok().build();
+        }catch (Exception e){
+            return ResponseEntity.internalServerError().build();
+        }
+
     }
 }
