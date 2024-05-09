@@ -49,8 +49,7 @@ public class DecorController {
     @GetMapping("/get/{id}")
     public ResponseEntity<DecorDto> findById(@PathVariable("id") Long id) {
         DecorDto decor = decorService.findById(id);
-        throw new RuntimeException("aloalao");
-//        return ResponseEntity.ok(decor);
+        return ResponseEntity.ok(decor);
     }
 
     @DeleteMapping("/del/{id}")
