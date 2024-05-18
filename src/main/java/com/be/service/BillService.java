@@ -3,10 +3,12 @@ package com.be.service;
 import com.be.authenticate.JwtUtil;
 import com.be.authenticate.SecurityUtil;
 import com.be.common_api.Bill;
+import com.be.common_api.BillDetail;
 import com.be.common_api.Cart;
 import com.be.dto.BillDto;
 import com.be.handler.Utils;
 import com.be.mapper.BillMapper;
+import com.be.repository.BillDetailRepository;
 import com.be.repository.BillRepository;
 import com.be.repository.CartRepository;
 import com.llq.springfilter.boot.Filter;
@@ -20,6 +22,8 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+import javax.validation.constraints.Null;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -37,14 +41,23 @@ public class BillService {
 
     @Transactional
     public BillDto save(BillDto billDto) {
-        Bill entity = billMapper.toEntity(billDto);
-        Long userId = SecurityUtil.getUserPrincipalId();
-        List<Cart> lst = repositoryCart.findByUser(userId);
-        lst.forEach(cart -> {
-            cart.setDeleted(true);
-        });
-        repositoryCart.saveAll(lst);
-        return billMapper.toDto(repository.save(entity));
+        try {
+
+            Bill entity = billMapper.toEntity(billDto);
+            Long userId = SecurityUtil.getUserPrincipalId();
+            List<Cart> lst = repositoryCart.findByUser(userId);
+            Bill bill = repository.save(entity);
+            lst.forEach(cart -> {
+                cart.setDeleted(true);
+            });
+            repositoryCart.saveAll(lst);
+            return billMapper.toDto(bill);
+        }catch (Exception e){
+            return null;
+        }
+
+
+
     }
 
     public void deleteById(Long id) {
