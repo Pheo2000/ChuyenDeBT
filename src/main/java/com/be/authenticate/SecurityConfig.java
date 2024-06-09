@@ -77,12 +77,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/api/bill-detail/get/*",
             "/api/nguoi-dung/put/*",
             "/api/cart/get/*",
-             "/api/history-bill/post","/api/history-bill/get/*","/api/history-bill/put/*","/api/history-bill/del/*",
-         
-    };
-
-    String[] ROLE_USER_LIST = {
-//            role user
+            "/api/history-bill/post","/api/history-bill/get/*","/api/history-bill/put/*","/api/history-bill/del/*",
             "/api/nguoi-dung/change-password",
             "/api/favorite/post","/api/favorite/get/*","/api/favorite/put/*","/api/favorite/del/*",
             "/api/cart/post","/api/cart/put/*","/api/cart/del/*",
@@ -90,6 +85,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/api/history-find/post","/api/history-find/get/*","/api/history-find/put/*","/api/history-find/del/*",
             "/api/bill-detail/post",
             "/api/bill/post"
+         
+    };
+
+    String[] ROLE_USER_LIST = {
     };
 
     String[] ROLE_ADMIN_LIST = {
